@@ -1,16 +1,16 @@
-# This is a sample Python script.
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+from card_class_handler import *
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+# Sets up the card deck
+def setup_imports():
+    cardProperties = CardProperties()
+    f_deck = Deck(1, True, cardProperties.value_list, cardProperties.suit_list)
+    return f_deck
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+if __name__ == "__main__":
+    deck = setup_imports()
+    players = []
+    for i in range(5):
+        players.append(Player())
+    print(players)
