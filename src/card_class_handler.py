@@ -26,48 +26,6 @@ class Card:
         return self.__str__()
 
 
-class CardProperties:
-    """
-    This is a class that represents a list of possible suits and values for a deck of cards.
-
-    Attributes:
-    suit_list (list): a list of possible suits for a card (e.g. "hearts", "diamonds", "clubs", "spades").
-    value_list (list): a list of possible values for a card (e.g. "ace", "2", "3", ..., "10", "jack", "queen", "king").
-
-    Methods:
-    __init__: initializes a CardProperties instance with the specified suits and values.
-    extract_suit_list_from_file: extracts a list of suits from a file.
-    extract_value_list_from_file: extracts a list of values from a file.
-    """
-    suit_list = ["Hearts", "Diamonds", "Spades", "Clubs"]
-    value_list = [2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", "Ace"]
-
-    def __init__(self, suits=None, values=None):
-        if suits is not None:
-            self.suit_list = suits
-        else:
-            self.suit_list = ["Hearts", "Diamonds", "Spades", "Clubs"]
-
-        if values is not None:
-            self.value_list = values
-        else:
-            self.value_list = [2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", "Ace"]
-
-    def extract_suit_list_from_file(self, filename):
-        try:
-            with open(filename, "r") as suit_list_file:
-                self.suit_list = suit_list_file.readlines()
-        except FileNotFoundError:
-            print("ERROR: File not found.")
-
-    def extract_value_list_from_file(self, filename):
-        try:
-            with open(filename, "r") as value_list_file:
-                self.value_list = value_list_file.readlines()
-        except FileNotFoundError:
-            print("ERROR: File not found.")
-
-
 class Deck:
     """
     This is a class that represents a deck of the Cards class.
@@ -82,7 +40,14 @@ class Deck:
     """
     deck = []
 
-    def __init__(self, nof_card_packs, shuffled, value_list, suit_list):
+    def __init__(self, nof_card_packs, shuffled, value_list = [2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", "Ace"], suit_list = ["Hearts", "Diamonds", "Spades", "Clubs"]):
+        if suit_list is None:
+            suit_list = ["Hearts", "Diamonds", "Spades", "Clubs"]
+
+        if value_list is None:
+            value_list = [2, 3, 4, 5, 6, 7, 8, 9, 10, "J", "Q", "K", "Ace"]
+
+        
         for pack in range(nof_card_packs):
             self.deck += [Card(suit, value) for value in value_list for suit in suit_list]
 
@@ -123,9 +88,6 @@ class Deck:
                 break
         return drawn_cards
 
-    def show_top_card(self):
-        return self.deck[0]
-
     def cut_deck(self):
         cut_point = random.randint(0, 25)
         cut_1 = []
@@ -133,6 +95,20 @@ class Deck:
             cut_1.append(self.deck[i])
             self.deck.pop(i)
         self.deck = self.deck + cut_1
+
+    def extract_suit_list_from_file(self, filename):
+        try:
+            with open(filename, "r") as suit_list_file:
+                self.suit_list = suit_list_file.readlines()
+        except FileNotFoundError:
+            print("ERROR: File not found.")
+
+    def extract_value_list_from_file(self, filename):
+        try:
+            with open(filename, "r") as value_list_file:
+                self.value_list = value_list_file.readlines()
+        except FileNotFoundError:
+            print("ERROR: File not found.")
 
 
 class Player:
@@ -159,3 +135,27 @@ class Player:
                         self.score += 30
                 case _:
                     self.score += i
+
+class GameHandler:
+    def __init__(self, nof_players):
+        self.players = []
+        for i in range(nof_players):
+
+            self.players.append(Player())
+        print(f"{len(self.players)} players generated")
+
+        self.deck = Deck(1, True)
+        print(f"{self.deck}")
+        self.deck.cut_deck()
+        self.deal_cards()
+
+    def __str__(self):
+        return f"Players: {self.players}, Deck: {self.deck}"
+
+    def __repr__(self):
+        return self.__str__()
+    
+    def deal_cards(self):
+        for deck in self.deck.deck:
+            for player in self.players:
+                player.hand.append(self.deck.draw_from_top()[0])
